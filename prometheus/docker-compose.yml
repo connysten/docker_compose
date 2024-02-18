@@ -1,0 +1,35 @@
+---
+volumes:
+  prometheus-data:
+    driver: local
+
+networks:
+  prometheus-network:
+    driver: bridge
+
+services:
+  prometheus:
+    image: registry.hellnet.se/prom/prometheus:v2.49.1
+    container_name: prometheus
+    ports:
+      - 9090
+    command: "--config.file=/etc/prometheus/prometheus.yaml"
+    volumes:
+      - prometheus-data:/prometheus
+      - ./config:/etc/prometheus
+    restart: unless-stopped
+    networks:
+      - prometheus-network
+
+  nginx:
+    image: registry.hellnet.se/nginx:1.25.4-alpine
+    container_name: nginx_prometheus
+    ports:
+      - "9090:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./htpasswd:/etc/nginx/.htpasswd
+    networks:
+      - prometheus-network
+    depends_on:
+      - prometheus
