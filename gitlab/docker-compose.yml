@@ -1,0 +1,29 @@
+version: '3.6'
+
+volumes:
+  gitlab-config:
+    driver: local
+  gitlab-logs:
+    driver: local
+  gitlab-data:
+    driver: local
+
+services:
+  gitlab:
+    image: registry.hellnet.se/gitlab/gitlab-ce:16.9.1-ce.0
+    container_name: gitlab
+    restart: always
+    hostname: 'gitlab.hellnet.se'
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        gitlab_rails['gitlab_shell_ssh_port'] = 2424
+    ports:
+      - '80:80'
+      - '443:443'
+      - '2424:2424'
+    volumes:
+      - 'gitlab-config:/etc/gitlab'
+      - 'gitlab-logs:/var/log/gitlab'
+      - 'gitlab-data:/var/opt/gitlab'
+    shm_size: '256m'
+

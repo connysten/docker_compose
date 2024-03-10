@@ -1,1 +1,3 @@
 htpasswd
+venv
+__pycache__
